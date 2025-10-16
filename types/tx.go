@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/cometbft/cometbft/crypto/merkle"
-	"github.com/cometbft/cometbft/crypto/tmhash"
+	"github.com/ethereum/go-ethereum/crypto"
 	cmtbytes "github.com/cometbft/cometbft/libs/bytes"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 )
@@ -25,13 +25,15 @@ type (
 	TxKey [TxKeySize]byte
 )
 
-// Hash computes the TMHASH hash of the wire encoded transaction.
+// Hash computes the Keccak256 hash of the wire encoded transaction.
 func (tx Tx) Hash() []byte {
-	return tmhash.Sum(tx)
+	return crypto.Keccak256(tx)
 }
 
 func (tx Tx) Key() TxKey {
-	return sha256.Sum256(tx)
+	var key TxKey
+	copy(key[:], crypto.Keccak256(tx))
+	return key
 }
 
 // String returns the hex-encoded transaction as a string.
